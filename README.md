@@ -1,4 +1,4 @@
-I developed a simple password manager that deposits encrypted credential data and serves it on request. 
+I developed a simple password manager that stores encrypted credential data and serves it on request. 
 
 ## Procedure
 - The client encrypts passwords and sends it to the server. Whenever we call our credentials back, the server will check for authorization and will serve the data if it is authorized.
