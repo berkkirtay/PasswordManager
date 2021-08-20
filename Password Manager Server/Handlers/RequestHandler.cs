@@ -38,9 +38,7 @@ namespace Password_Manager_Server
 
             else if (req.RawUrl == "/getAllCredentials")
             {
-                currentRespond = JsonConvert.SerializeObject(
-                                    credentialManager.GetPasswordContainer(),
-                                                        Formatting.Indented);
+                SendAllCredentials(context);
             }
 
             else if (req.RawUrl == "/reset")
@@ -73,6 +71,15 @@ namespace Password_Manager_Server
             currentRespond = "A new password is inserted by " +
                             context.Request.RemoteEndPoint.ToString();
             Console.WriteLine(currentRespond);
+        }
+
+        private void SendAllCredentials(HttpListenerContext context)
+        {
+            currentRespond = JsonConvert.SerializeObject(
+                    credentialManager.GetPasswordContainer(),
+                                        Formatting.Indented);
+            Console.WriteLine("Password container is sent to " +
+                                context.Request.RemoteEndPoint.ToString());
         }
     }
 }

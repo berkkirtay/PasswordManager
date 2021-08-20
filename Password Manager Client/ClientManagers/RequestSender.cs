@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Password_Manager
+namespace Password_Manager_Client
 {
     using System.Net;
     using System.IO;
@@ -8,7 +8,6 @@ namespace Password_Manager
 
     class RequestSender
     {
-
         static public WebRequest CreatePOSTRequest(string URL, byte[] data)
         {
             var req = (HttpWebRequest)WebRequest.Create(URL);
@@ -35,10 +34,6 @@ namespace Password_Manager
             var response = (HttpWebResponse)req.GetResponse();
             var responseString = new StreamReader(
                 response.GetResponseStream()).ReadToEnd();
-
-            StreamWriter writer = new StreamWriter("EncryptedCredentials.json");
-            writer.WriteLine(responseString);
-            writer.Close();
             return responseString;
         }
 

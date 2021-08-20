@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Password_Manager
+namespace Password_Manager_Client
 {
     class Program
     {

@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 namespace Password_Manager_Server
 {
     using System.Security.Cryptography;
-    class SignatureMaker
+    class EncryptionManager
     {
         private RSAParameters public_key { get; set; }
         private RSAParameters private_key { get; set; }
 
         private RSACryptoServiceProvider rsa;
 
-        public SignatureMaker(int keySize)
+        public EncryptionManager(int keySize)
         {
             rsa = new RSACryptoServiceProvider(keySize);
         }

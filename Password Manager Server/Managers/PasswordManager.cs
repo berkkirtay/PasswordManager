@@ -12,8 +12,9 @@ namespace Password_Manager_Server
 {
     class PasswordManager : IServerManager
     {
-        private bool authorizationStatus = true;
+        private bool authorizationStatus = false;
         private RequestHandler requestHandler = null;
+        private const string authKey = "berk";
 
         public PasswordManager(HttpListenerContext context)
         {
@@ -29,7 +30,6 @@ namespace Password_Manager_Server
             }
             else
             {
-                context.Response.StatusCode = 503;
                 HandleAuthorization(context);
             }
         }
@@ -38,16 +38,18 @@ namespace Password_Manager_Server
         {
             var req = context.Request;
             StreamReader reader = new StreamReader(req.InputStream);
-            if (reader.ReadToEnd().Equals("12345"))
+            if (reader.ReadToEnd().Equals(authKey))
             {
                 context.Response.StatusCode = 201;
                 context.Response.StatusDescription = "Authorized session.";
                 authorizationStatus = true;
+                Server.SendDataToClient(
+                    context, Encoding.UTF8.GetBytes("You are authorized."));
             }
             else
             {
-              //  currentRespond =
-                //    "Please send your key first for authorization.";
+                Server.SendDataToClient(
+                    context, Encoding.UTF8.GetBytes("AuthErr"));
             }
         }
     }

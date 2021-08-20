@@ -41,6 +41,7 @@ namespace Password_Manager_Server
                 credentials.Add(new PasswordContainer(userID, password));
             }
         }
+
         public void SaveContainerToLocal()
         {
             string container = JsonConvert.SerializeObject(
