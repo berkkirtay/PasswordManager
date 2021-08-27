@@ -30,7 +30,7 @@ namespace PasswordManagerService
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            this.ServiceName = "PasswordManagerService";
+            this.ServiceName = "Service1";
         }
 
         #endregion

@@ -15,12 +15,12 @@ namespace Password_Manager_Client
         private string urlPath;
         private bool menuLoop = true;
         private PasswordSigner passwordSigner = null;
-        private EncryptionManager signer = new EncryptionManager(1024);
+        private EncryptionManager signer = new EncryptionManager(2048);
 
         public PasswordManagerClient()
         {
+            SetAuthorization();
             InvokePasswordSigner();
-            TestServer();
             while (menuLoop)
             {
                 Menu();    
@@ -48,11 +48,10 @@ namespace Password_Manager_Client
                     break;
                 case '4':
                     urlPath = "/reset";
-                    SendData(Encoding.UTF8.GetBytes("reset"));
-                   // menuLoop = false;
+                    SendData(
+                        Encoding.UTF8.GetBytes("reset"));
                     break;
             }
-           // credentials.Clear();
         }
 
         private void SendContainer()
@@ -92,11 +91,11 @@ namespace Password_Manager_Client
         {
             urlPath = "/getAllCredentials";
             var req = RequestSender.CreateGETRequest(
-                "http://localhost:5000" + urlPath);
+                "http://localhost:5000" + urlPath);      
             var data = RequestSender.GetRespond(req);
             InvokePasswordSigner();
             passwordSigner.SerializeDataAndAssign(data);
-            passwordSigner.SecurePasswords(decrypt);
+            AttemptCryptography();
             Console.WriteLine(passwordSigner.ToString());
         }
 
@@ -106,22 +105,30 @@ namespace Password_Manager_Client
             passwordSigner.SetSigner(signer);
         }
 
-        private void TestServer()
-        {
-            var req = RequestSender.CreateGETRequest(
-           "http://localhost:5000" + urlPath);
-            var data = RequestSender.GetRespond(req);
-            if (data.Equals("AuthErr"))
-            {
-                SetAuthorization();
-            }
-
-        }
         private void SetAuthorization()
         {
             Console.WriteLine("Enter your key to access passwords: ");
             string pass = Console.ReadLine();
-            SendData(Encoding.UTF8.GetBytes(pass));
+            RequestSender.SetAuthorization(pass);
+        }
+
+        private void AttemptCryptography()
+        {
+            try
+            {
+                passwordSigner.SecurePasswords(decrypt);
+            }
+            catch (System.Security.Cryptography.CryptographicException)
+            {
+                Console.WriteLine(
+                    "CryptographicException: Attemp to decrypt with an invalid private key.");
+                return;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cryptography error: " + ex.ToString());
+                return;
+            }
         }
 
         private void SendData(byte[] parsedData)
@@ -129,8 +136,7 @@ namespace Password_Manager_Client
             var req = RequestSender.CreatePOSTRequest(
                 "http://localhost:5000" + urlPath, parsedData);
             var respondStr = RequestSender.GetRespond(req);
-            Console.WriteLine("Server respond: " + respondStr);
-            
+            Console.WriteLine("Server respond: " + respondStr);        
         }
     }
 

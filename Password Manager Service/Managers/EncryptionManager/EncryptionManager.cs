@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PasswordManagerService
+namespace Password_Manager_Server
 {
     using System.Security.Cryptography;
     class EncryptionManager
@@ -17,6 +17,12 @@ namespace PasswordManagerService
         public EncryptionManager(int keySize)
         {
             rsa = new RSACryptoServiceProvider(keySize);
+        }
+
+        private void KeyGenerator()
+        {
+            public_key = rsa.ExportParameters(false);
+            private_key = rsa.ExportParameters(true);
         }
 
         public byte[] Encrypt(byte[] data)
@@ -34,12 +40,11 @@ namespace PasswordManagerService
             return private_key;
         }
 
-        private void KeyGenerator()
+        static public byte[] HashData(string key)
         {
-            public_key = rsa.ExportParameters(false);
-            private_key = rsa.ExportParameters(true);
+            var sha256 = SHA256.Create();
+            var hashedData = sha256.ComputeHash(Encoding.UTF8.GetBytes(key));
+            return hashedData;
         }
-        
-
     }
 }

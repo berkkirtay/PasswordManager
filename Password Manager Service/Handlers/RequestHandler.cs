@@ -7,7 +7,7 @@ using System.IO;
 using System.Net;
 using Newtonsoft.Json;
 
-namespace PasswordManagerService
+namespace Password_Manager_Server
 {
 
     class RequestHandler

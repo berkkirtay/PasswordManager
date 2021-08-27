@@ -86,6 +86,7 @@ namespace Password_Manager_Client
             unsignedCredentials.Clear();
             unsignedCredentials.Add(credential);
         }
+
         public byte[] GetParsedPasswordData()
         {
             string container = JsonConvert.SerializeObject(

@@ -9,6 +9,6 @@ namespace Password_Manager_Server
 {
     interface IServerManager
     {
-        public void Invoke(HttpListenerContext context);
+        void Invoke(HttpListenerContext context);
     }
 }

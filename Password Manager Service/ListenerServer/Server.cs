@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PasswordManagerService
+namespace Password_Manager_Server
 {
     using System.Net;
     using System.Threading.Tasks;
@@ -77,6 +77,7 @@ namespace PasswordManagerService
                 response.ContentType = "application/json";
                 response.ContentLength64 = buffer.Length;
                 response.OutputStream.Write(buffer, 0, buffer.Length);
+                response.Close();
             }
         }
 
