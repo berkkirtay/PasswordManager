@@ -13,7 +13,9 @@ namespace Password_Manager_Server
     {
         private bool authorizationStatus = false;
         private RequestHandler requestHandler = null;
-        private string authKey = "berk";
+
+        private List<string> authorizedUsers = new List<string>();
+
 
         public PasswordManager(HttpListenerContext context)
         {
@@ -44,12 +46,21 @@ namespace Password_Manager_Server
         {
             var req = context.Request;
             var authorizationKey = req.Headers.Get("Authorization");
+         /*   bool userFlag = false;
+            authorizedUsers.ForEach(user => 
+            {
+                if (authorizationKey.Contains(user))
+                {
+                    userFlag = true;
+                }
+            }); */
 
-            if (authorizationKey.Contains(authKey))
+            if (authorizationKey.Length != 0)
             {
                 authorizationStatus = true;
                 context.Response.StatusCode = 201;
                 context.Response.StatusDescription = "Authorized session.";
+                requestHandler.SetUserSession(authorizationKey);
                 Invoke(context);
             }
             else
@@ -64,25 +75,17 @@ namespace Password_Manager_Server
 
         private void SetAuthorizationToken()
         {
-            var token = EncryptionManager.HashData(authKey);
-            authKey = Convert.ToBase64String(token);
+            authorizedUsers.Add("berk");
+            authorizedUsers.Add("berk2");
+            List<string> generatedTokens = new List<string>();
+            authorizedUsers.ForEach(user =>
+            {
+                var token = EncryptionManager.HashData(user);
+                generatedTokens.Add(Convert.ToBase64String(token));
+            });
+            authorizedUsers = generatedTokens;
+            authorizedUsers.Add("test");
         }
     }
 
-    public struct PasswordContainer
-    {
-        public string userID;
-        public string password;
-
-        public PasswordContainer(string userID, string password)
-        {
-            this.userID = userID;
-            this.password = password;
-        }
-
-        public override string ToString()
-        {
-            return userID + " " + password;
-        } 
-    }
 }

@@ -20,6 +20,11 @@ namespace Password_Manager_Server
             credentialManager = new CredentialManager();
         }
 
+        public void SetUserSession(string token)
+        {
+            credentialManager.CreateUserCredentialSession(token);
+        }
+
         public void HandleRequests(HttpListenerContext context)
         {
             var req = context.Request;
@@ -54,12 +59,13 @@ namespace Password_Manager_Server
 
             Server.SendDataToClient(
                     context, Encoding.UTF8.GetBytes(currentRespond));
+
+            credentialManager.SetUserData();
         }
 
         private void ImportNewContainer(HttpListenerContext context)
         {
             credentialManager.SetPasswordsData(context);
-            credentialManager.SaveContainerToLocal();
             currentRespond = "A new password container imported by " +
                             context.Request.RemoteEndPoint.ToString();
             Console.WriteLine(currentRespond);
