@@ -35,8 +35,6 @@ namespace PasswordManagerService
             // serviceProcessInstaller1
             // 
             this.serviceProcessInstaller1.Account = System.ServiceProcess.ServiceAccount.LocalSystem;
-            this.serviceProcessInstaller1.Password = null;
-            this.serviceProcessInstaller1.Username = null;
             // 
             // serviceInstaller1
             // 
@@ -52,6 +50,7 @@ namespace PasswordManagerService
             this.serviceInstaller1});
 
         }
+
 
         #endregion
 

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 
-namespace Password_Manager_Server
+namespace PasswordManagerService
 {
     interface IServerManager
     {

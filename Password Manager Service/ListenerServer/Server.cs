@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Password_Manager_Server
+namespace PasswordManagerService
 {
     using System.Net;
     using System.Threading.Tasks;
@@ -53,6 +53,10 @@ namespace Password_Manager_Server
         {
             var req = context.Request;
             StreamReader reader = new StreamReader(req.InputStream);
+
+            // This statement looks like a method version of proxy pattern.
+            // When we get a new request we do not need to instantiate a new object again.
+
             try
             {
                 if (passwordManagerSession == null)
@@ -67,9 +71,9 @@ namespace Password_Manager_Server
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-            }     
+            }
         }
- 
+
         static public void SendDataToClient(HttpListenerContext httpListenerContext, byte[] buffer)
         {
             using (var response = httpListenerContext.Response)

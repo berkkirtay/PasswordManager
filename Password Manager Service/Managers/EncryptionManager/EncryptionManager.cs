@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Password_Manager_Server
+namespace PasswordManagerService
 {
     using System.Security.Cryptography;
     class EncryptionManager
