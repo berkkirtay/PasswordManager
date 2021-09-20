@@ -9,7 +9,6 @@ using Newtonsoft.Json;
 
 namespace Password_Manager_Server
 {
-
     class RequestHandler
     {
         private CredentialManager credentialManager = null;

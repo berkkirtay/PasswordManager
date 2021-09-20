@@ -10,6 +10,7 @@ using System.IO;
 namespace Password_Manager_Client
 {
     // This class needs to be refactored.
+
     class PasswordManagerClient : BaseSigner
     {
         private string urlPath;
@@ -139,22 +140,4 @@ namespace Password_Manager_Client
             Console.WriteLine("Server respond: " + respondStr);        
         }
     }
-
-    public struct PasswordContainer
-    {
-        public string userID;
-        public string password;
-
-        public PasswordContainer(string userID, string password)
-        {
-            this.userID = userID;
-            this.password = password;
-        }
-
-        public override string ToString()
-        {
-            return userID + " " + password;
-        }
-    }
-
 }

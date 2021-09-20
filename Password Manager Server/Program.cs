@@ -8,7 +8,7 @@ namespace Password_Manager_Server
         {
             Server server = new Server();
             server.StartServer();
-            System.Threading.Thread.Sleep(1000000);
+            System.Threading.Thread.Sleep(int.MaxValue);
         }
     }
 }
