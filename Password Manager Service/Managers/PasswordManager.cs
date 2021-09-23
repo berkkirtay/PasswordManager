@@ -20,7 +20,7 @@ namespace PasswordManagerService
         public PasswordManager(HttpListenerContext context)
         {
             requestHandler = new RequestHandler();
-            SetAuthorizationToken();
+            //  SetAuthorizationToken();
             Invoke(context);
         }
 
@@ -76,7 +76,6 @@ namespace PasswordManagerService
         private void SetAuthorizationToken()
         {
             authorizedUsers.Add("berk");
-            authorizedUsers.Add("berk2");
             List<string> generatedTokens = new List<string>();
             authorizedUsers.ForEach(user =>
             {

@@ -51,9 +51,6 @@ namespace PasswordManagerService
 
         static private void HandleRequest(HttpListenerContext context)
         {
-            var req = context.Request;
-            StreamReader reader = new StreamReader(req.InputStream);
-
             // This statement looks like a method version of proxy pattern.
             // When we get a new request we do not need to instantiate a new object again.
 
@@ -84,6 +81,5 @@ namespace PasswordManagerService
                 response.Close();
             }
         }
-
     }
 }

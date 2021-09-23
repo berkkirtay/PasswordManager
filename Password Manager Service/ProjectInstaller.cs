@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Configuration.Install;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ServiceProcess;
 
 namespace PasswordManagerService
 {
@@ -17,7 +18,7 @@ namespace PasswordManagerService
         }
 
         private void serviceInstaller1_AfterInstall(object sender, InstallEventArgs e)
-        { 
+        {
 
         }
     }

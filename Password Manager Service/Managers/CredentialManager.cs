@@ -17,11 +17,14 @@ namespace PasswordManagerService
         private List<PasswordContainerModel> userCredentials =
                     new List<PasswordContainerModel>();
 
+        private CredentialsDB db;
+
         public void SetPasswordsData(HttpListenerContext context)
         {
             var req = context.Request;
             StreamReader reader = new StreamReader(req.InputStream);
             SerializeDataAndAssign(reader.ReadToEnd());
+            InsertCredentialsToDB();
         }
 
         private void SerializeDataAndAssign(string data)
@@ -47,6 +50,7 @@ namespace PasswordManagerService
 
         public List<PasswordContainer> GetPasswordContainer()
         {
+            GetCredentialsFromDB();
             List<PasswordContainer> fetchedContainer = null;
             userCredentials.ForEach(user =>
             {
@@ -61,12 +65,14 @@ namespace PasswordManagerService
         public void ResetCredentials()
         {
             credentials.Clear();
+            db.DeleteAllSessionCredentials(userCredentialToken);
         }
 
         public void CreateUserCredentialSession(string token)
         {
             userCredentialToken = token;
-            foreach(PasswordContainerModel user in userCredentials)
+            GetCredentialsFromDB();
+            foreach (PasswordContainerModel user in userCredentials)
             {
                 if(user.userKeyToken == userCredentialToken)
                 {
@@ -74,8 +80,9 @@ namespace PasswordManagerService
                     return;
                 }
             }
-            userCredentials.Add(
-                new PasswordContainerModel(token, new List<PasswordContainer>()));
+            userCredentials.Add(new PasswordContainerModel(token, new List<PasswordContainer>()));
+
+            db = new CredentialsDB(userCredentialToken);
         }
 
         public void SetUserData()
@@ -90,6 +97,7 @@ namespace PasswordManagerService
                         userCredentials.Add(credential);
                     });
                     user.passwordContainer = userCredentials;
+
                     credentials.Clear();
                     SaveContainerToLocal();
                     return;
@@ -97,7 +105,7 @@ namespace PasswordManagerService
             }
         }
 
-        public void SaveContainerToLocal()
+        private void SaveContainerToLocal()
         {
             string container = JsonConvert.SerializeObject(
                 userCredentials, Formatting.Indented);
@@ -106,6 +114,24 @@ namespace PasswordManagerService
             writer.Close();
         }
 
+        private void GetCredentialsFromDB()
+        {
+            foreach (PasswordContainerModel user in userCredentials)
+            {
+                if (user.userKeyToken == userCredentialToken)
+                {
+                    user.passwordContainer = db.GetUserCredentials();
+                    return;
+                }
+            } 
+        }
 
+        private void InsertCredentialsToDB()
+        {
+            foreach (var credential in credentials)
+            {
+                db.Insert(credential.userID, credential.password);
+            }
+        }    
     }
 }
