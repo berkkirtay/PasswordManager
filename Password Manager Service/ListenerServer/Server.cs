@@ -41,9 +41,9 @@ namespace PasswordManagerService
                         HandleRequest(context);
                     }
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Console.WriteLine(e.ToString());
+                    Console.WriteLine(ex.ToString());
                     return;
                 }
             }

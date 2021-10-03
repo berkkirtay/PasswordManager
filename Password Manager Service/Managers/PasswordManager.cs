@@ -33,7 +33,7 @@ namespace PasswordManagerService
                 authorizationStatus = false;
             }
             else
-            {
+            {   
                 HandleAuthorization(context);
             }
         }

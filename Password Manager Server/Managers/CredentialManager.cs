@@ -21,6 +21,7 @@ namespace Password_Manager_Server
 
         public void SetPasswordsData(HttpListenerContext context)
         {
+            credentials.Clear();
             var req = context.Request;
             StreamReader reader = new StreamReader(req.InputStream);
             SerializeDataAndAssign(reader.ReadToEnd());
@@ -71,7 +72,6 @@ namespace Password_Manager_Server
         public void CreateUserCredentialSession(string token)
         {
             userCredentialToken = token;
-            GetCredentialsFromDB();
             foreach (PasswordContainerModel user in userCredentials)
             {
                 if(user.userKeyToken == userCredentialToken)
@@ -83,26 +83,6 @@ namespace Password_Manager_Server
             userCredentials.Add(new PasswordContainerModel(token, new List<PasswordContainer>()));
 
             db = new CredentialsDB(userCredentialToken);
-        }
-
-        public void SetUserData()
-        {
-            foreach (PasswordContainerModel user in userCredentials)
-            {
-                if (user.userKeyToken == userCredentialToken)
-                {
-                    List<PasswordContainer> userCredentials = new List<PasswordContainer>();
-                    credentials.ForEach(credential =>
-                    {
-                        userCredentials.Add(credential);
-                    });
-                    user.passwordContainer = userCredentials;
-
-                    credentials.Clear();
-                    SaveContainerToLocal();
-                    return;
-                }
-            }
         }
 
         private void SaveContainerToLocal()

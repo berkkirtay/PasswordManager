@@ -58,8 +58,6 @@ namespace PasswordManagerService
 
             Server.SendDataToClient(
                     context, Encoding.UTF8.GetBytes(currentRespond));
-
-            credentialManager.SetUserData();
         }
 
         private void ImportNewContainer(HttpListenerContext context)

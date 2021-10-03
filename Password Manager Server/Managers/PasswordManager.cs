@@ -33,7 +33,7 @@ namespace Password_Manager_Server
                 authorizationStatus = false;
             }
             else
-            {
+            {   
                 HandleAuthorization(context);
             }
         }
