@@ -2,7 +2,7 @@
 
 namespace Password_Manager_Server
 {
-    class PasswordContainerModel
+    public class PasswordContainerModel
     {
         public string userKeyToken;
         public List<PasswordContainer> passwordContainer;

@@ -6,34 +6,32 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net;
 using System.IO;
+using MediatR;
 
 namespace Password_Manager_Server
 {
-    class PasswordManager : IServerManager
+    class PasswordManager : IPasswordManager
     {
         private bool authorizationStatus = false;
-        private RequestHandler requestHandler = null;
+        private readonly RequestHandler requestHandler;
 
-        private List<string> authorizedUsers = new List<string>();
-
-
-        public PasswordManager(HttpListenerContext context)
+        public PasswordManager(HttpListenerContext context, IMediator mediator)
         {
-            requestHandler = new RequestHandler();
+            requestHandler = new RequestHandler(mediator);
             //  SetAuthorizationToken();
             Invoke(context);
         }
 
         public void Invoke(HttpListenerContext context)
         {
-           
             if (authorizationStatus == true)
             {
-                requestHandler.HandleRequests(context);
+                var res = requestHandler.HandleRequest(context.Request).Result;
                 authorizationStatus = false;
+                Server.SendDataToClient(context, res);
             }
             else
-            {   
+            {
                 HandleAuthorization(context);
             }
         }
@@ -73,6 +71,7 @@ namespace Password_Manager_Server
 
         }
 
+        /*
         private void SetAuthorizationToken()
         {
             authorizedUsers.Add("berk");
@@ -85,6 +84,8 @@ namespace Password_Manager_Server
             authorizedUsers = generatedTokens;
             authorizedUsers.Add("test");
         }
+
+        */
     }
 
 }

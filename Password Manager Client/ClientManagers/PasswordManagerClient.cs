@@ -92,7 +92,7 @@ namespace Password_Manager_Client
         {
             urlPath = "/getAllCredentials";
             var req = RequestSender.CreateGETRequest(
-                "http://localhost:5000" + urlPath);      
+                "http://localhost:8000" + urlPath);      
             var data = RequestSender.GetRespond(req);
             InvokePasswordSigner();
             passwordSigner.SerializeDataAndAssign(data);
@@ -135,7 +135,7 @@ namespace Password_Manager_Client
         private void SendData(byte[] parsedData)
         {
             var req = RequestSender.CreatePOSTRequest(
-                "http://localhost:5000" + urlPath, parsedData);
+                "http://localhost:8000" + urlPath, parsedData);
             var respondStr = RequestSender.GetRespond(req);
             Console.WriteLine("Server respond: " + respondStr);        
         }

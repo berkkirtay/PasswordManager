@@ -2,24 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using MediatR;
 
 namespace Password_Manager_Server
 {
     using System.Net;
     using System.Threading.Tasks;
-    using Newtonsoft.Json;
-    using System.IO;
 
     class Server
     {
-        private const int PORT = 5000;
+        private const int PORT = 8000;
         private readonly HttpListener listener;
-
+        private IHost host;
         static private PasswordManager passwordManagerSession = null;
 
-        public Server()
+        public Server(IHost host)
         {
+            this.host = host;
             listener = new HttpListener();
             listener.Prefixes.Add($"http://localhost:{PORT}/");
         }
@@ -28,37 +29,36 @@ namespace Password_Manager_Server
         {
             await ListenerLoop(listener);
         }
-        static private async Task ListenerLoop(HttpListener listener)
+        private async Task ListenerLoop(HttpListener listener)
         {
             listener.Start();
             while (true)
             {
-                try
+                var context = await listener.GetContextAsync();
+                lock (listener)
                 {
-                    var context = await listener.GetContextAsync();
-                    lock (listener)
-                    {
-                        HandleRequest(context);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                    return;
+                    HandleRequest(context);
                 }
             }
         }
 
-        static private void HandleRequest(HttpListenerContext context)
+        private void HandleRequest(HttpListenerContext context)
         {
             // This statement looks like a method version of proxy pattern.
             // When we get a new request we do not need to instantiate a new object again.
-
             try
-            {
+            {     
+                if (context.Request.HttpMethod == "OPTIONS")
+                {
+                    SendDataToClient(context, Encoding.UTF8.GetBytes(""));
+                    return;
+                }
+
+
                 if (passwordManagerSession == null)
                 {
-                    passwordManagerSession = new PasswordManager(context);
+                    var mediator = host.Services.GetService<IMediator>();
+                    passwordManagerSession = new PasswordManager(context, mediator);
                 }
                 else
                 {
@@ -67,9 +67,13 @@ namespace Password_Manager_Server
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                context.Response.StatusCode = 500;
+                context.Response.StatusDescription = "Internal server error.";
+                SendDataToClient(context, Encoding.UTF8.GetBytes(ex.Message));
             }
         }
+
+    
 
         static public void SendDataToClient(HttpListenerContext httpListenerContext, byte[] buffer)
         {

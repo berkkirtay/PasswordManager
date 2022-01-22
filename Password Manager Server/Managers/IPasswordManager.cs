@@ -7,7 +7,7 @@ using System.Net;
 
 namespace Password_Manager_Server
 {
-    interface IServerManager
+    interface IPasswordManager
     {
         void Invoke(HttpListenerContext context);
     }
