@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System.Net;
-using System.IO;
 using MediatR;
+using System.Net.Http.Headers;
 
 namespace Password_Manager_Server
 {
@@ -15,24 +11,22 @@ namespace Password_Manager_Server
         private bool authorizationStatus = false;
         private readonly RequestHandler requestHandler;
 
-        public PasswordManager(HttpListenerContext context, IMediator mediator)
+        public PasswordManager(IMediator mediator)
         {
             requestHandler = new RequestHandler(mediator);
-            //  SetAuthorizationToken();
-            Invoke(context);
         }
 
-        public void Invoke(HttpListenerContext context)
+        public async Task Invoke(HttpListenerContext context)
         {
             if (authorizationStatus == true)
             {
-                var res = requestHandler.HandleRequest(context.Request).Result;
+                var res = await requestHandler.HandleRequest(context.Request);
                 authorizationStatus = false;
-                Server.SendDataToClient(context, res);
+                await Server .SendDataToClient(context, res);
             }
             else
             {
-                HandleAuthorization(context);
+                await HandleAuthorization (context);
             }
         }
 
@@ -40,52 +34,26 @@ namespace Password_Manager_Server
         // If the authorization key is invalid then password manager
         // will block every request.
         
-        private void HandleAuthorization(HttpListenerContext context)
+        private async Task HandleAuthorization(HttpListenerContext context)
         {
             var req = context.Request;
-            var authorizationKey = req.Headers.Get("Authorization");
-         /*   bool userFlag = false;
-            authorizedUsers.ForEach(user => 
-            {
-                if (authorizationKey.Contains(user))
-                {
-                    userFlag = true;
-                }
-            }); */
+            string authorizationHeader = req.Headers.Get("Authorization");
 
-            if (authorizationKey.Length != 0)
+            if (authorizationHeader.Length != 0)
             {
+                var authorizationToken = AuthenticationHeaderValue.Parse(authorizationHeader);
+                requestHandler.SetUserSession(authorizationToken.Parameter);
                 authorizationStatus = true;
                 context.Response.StatusCode = 201;
                 context.Response.StatusDescription = "Authorized session.";
-                requestHandler.SetUserSession(authorizationKey);
-                Invoke(context);
+                await Invoke(context);
             }
             else
             {
                 context.Response.StatusCode = 401;
                 context.Response.StatusDescription = "AuthErr";
-                Server.SendDataToClient(
-                        context, Encoding.UTF8.GetBytes("AuthErr"));
+                await Server.SendDataToClient( context, Encoding.UTF8.GetBytes("AuthErr"));
             }
-
         }
-
-        /*
-        private void SetAuthorizationToken()
-        {
-            authorizedUsers.Add("berk");
-            List<string> generatedTokens = new List<string>();
-            authorizedUsers.ForEach(user =>
-            {
-                var token = EncryptionManager.HashData(user);
-                generatedTokens.Add(Convert.ToBase64String(token));
-            });
-            authorizedUsers = generatedTokens;
-            authorizedUsers.Add("test");
-        }
-
-        */
     }
-
 }

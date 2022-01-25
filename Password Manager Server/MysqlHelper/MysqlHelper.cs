@@ -121,21 +121,38 @@ namespace Password_Manager_Server
             }
         }
 
+        public async Task<List<string>> GetAllUsers()
+        {
+            OpenConnection();
+
+            string query = $"SELECT * FROM usersTable";
+            MySqlCommand cmd = new MySqlCommand(query, mySqlConnection);
+            var reader = await cmd.ExecuteReaderAsync();
+
+            var usersList = new List<string>();
+            while (reader.Read())
+            {
+                usersList.Add(reader["userKeyToken"] + "");
+            }
+            CloseConnection();
+
+            return usersList;
+        }
+
         public async Task<List<PasswordContainer>> GetUserCredentials()
         {
             OpenConnection();
 
             string query = $"SELECT * FROM credentialsTable " +
                            $"WHERE userKeyToken = \"{userKeyToken}\";";
-
             MySqlCommand cmd = new MySqlCommand(query, mySqlConnection);
             var reader = await cmd.ExecuteReaderAsync();
-
 
             var userCredentialsList = new List<PasswordContainer>();
             while (reader.Read())
             {
-                userCredentialsList.Add(new PasswordContainer(reader["userName"] + "", reader["password"] + ""));
+                userCredentialsList.Add(new PasswordContainer(
+                    reader["userName"] + "", reader["password"] + "", reader.GetInt32(reader.GetOrdinal("credentialID"))));
             }
             CloseConnection();
 
@@ -189,6 +206,7 @@ namespace Password_Manager_Server
                            $"WHERE userKeyToken=\"{userKeyToken}\"";
             MySqlCommand cmd = new MySqlCommand(query, mySqlConnection);
             await cmd.ExecuteNonQueryAsync();
+
             CloseConnection();
         }
     }

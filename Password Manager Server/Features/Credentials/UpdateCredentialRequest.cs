@@ -6,23 +6,23 @@ using System.Threading.Tasks;
 using MediatR;
 using System.Threading;
 
-namespace Password_Manager_Server.Features.Credentials
+namespace Password_Manager_Server
 {
     public class UpdateCredentialRequest : IRequest
     {
-        public string userCredentialToken { get; set; }
-        public int credentialID { get; set; }
-        public PasswordContainer passwordContainer { get; set; }
+        public PasswordContainerModel passwordContainerModel { get; set; }
     }
 
     internal class UpdateCredentialRequestHandler : IRequestHandler<UpdateCredentialRequest, Unit>
     {
         public async Task<Unit> Handle(UpdateCredentialRequest request, CancellationToken cancellationToken)
         {
-
-            var sqlHelper = new MysqlHelper(request.userCredentialToken);
-            var container = request.passwordContainer;
-            await sqlHelper.UpdateCredential(request.credentialID, container.userID, container.password);
+            var model = request.passwordContainerModel;
+            var sqlHelper = new MysqlHelper(model.userKeyToken);
+            foreach (var credential in model.passwordContainer)
+            {
+                await sqlHelper.UpdateCredential(credential.credentialID, credential.userID, credential.password);
+            }      
             return Unit.Value;
         }
     }

@@ -1,4 +1,4 @@
-I developed a simple password manager that stores encrypted credential data in a database and serves it on request. 
+I developed a simple password manager that stores encrypted credential data in a database via meditor pattern.
 
 ## Procedure
 - The client encrypts passwords and sends it to the server. Whenever we try to get our credentials back, the server will check for authorization and will serve the data if it is authorized.
@@ -19,14 +19,15 @@ I developed a simple password manager that stores encrypted credential data in a
 
 - You can change the encryption algorithm on client or can use another client.
 
-- The server has 4 http request handlers:
+- The server has 5 http request handlers:
 
-   - /importNewContainer 
-   - /addCredential
-   - /getAllCredentials
+   - /addcredential
+   - /getallcredentials
+   - /deletecredential
+   - /updatecredential
    - /reset
            
-   With the given handlers, we can import a container that consists several passwords or a signle credential. We can also fetch or reset all the password data that corresponds to our user token on the server. 
+   With the given handlers, we can import a container that consists several passwords or a signle credential. We can also fetch or reset or update password data that corresponds to our user token on the server. 
    
 - Server saves all the data fields in a database, I hardcoded schemas in CredentialsDB.cs file, so even if the tables don't exist, server will generate them.
 - Additionally, server saves the credential data in a json file, so you may want to check it out in Password Manager Server folder. 

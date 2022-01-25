@@ -10,17 +10,19 @@ namespace Password_Manager_Server
 {
     public class PostCredentialsRequest : IRequest
     {
-        public string userCredentialToken { get; set; }
-
-        public PasswordContainer passwordContainer { get; set; }
+        public PasswordContainerModel passwordContainerModel { get; set; }
     }
 
     internal class PostCredentialsRequestHandler : IRequestHandler<PostCredentialsRequest, Unit>
     {
         public async Task<Unit> Handle(PostCredentialsRequest request, CancellationToken cancellationToken)
         {
-            var sqlHelper = new MysqlHelper(request.userCredentialToken);
-            await sqlHelper.InsertPassword(request.passwordContainer.userID, request.passwordContainer.password);
+            var model = request.passwordContainerModel;
+            var sqlHelper = new MysqlHelper(model.userKeyToken);
+            foreach (var credential in model.passwordContainer)
+            {
+                await sqlHelper.InsertPassword(credential.userID, credential.password);
+            }
             return Unit.Value;
         }
     }

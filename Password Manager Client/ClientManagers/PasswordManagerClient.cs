@@ -57,7 +57,7 @@ namespace Password_Manager_Client
 
         private void SendContainer()
         {
-            urlPath = "/importNewContainer";
+            urlPath = "/addCredential";
             var credentialsContainer = 
                 RequestSender.ImportData(Path.Combine(
                     AppDomain.CurrentDomain.BaseDirectory,
@@ -74,7 +74,7 @@ namespace Password_Manager_Client
 
         private void SendSignleCredential()
         {
-            urlPath = "/addCredential";
+            urlPath = "/addcredential";
             Console.Write("Enter ID: ");
             string userID = Console.ReadLine();
             Console.Write("Enter password: ");
@@ -90,7 +90,7 @@ namespace Password_Manager_Client
 
         private void GetCredentials()
         {
-            urlPath = "/getAllCredentials";
+            urlPath = "/getallcredentials";
             var req = RequestSender.CreateGETRequest(
                 "http://localhost:8000" + urlPath);      
             var data = RequestSender.GetRespond(req);

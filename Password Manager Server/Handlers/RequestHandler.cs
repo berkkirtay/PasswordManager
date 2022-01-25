@@ -13,8 +13,8 @@ namespace Password_Manager_Server
     class RequestHandler
     {
         private string currentRespond;
-        private string userKeyToken;
-        private IMediator mediator;
+        private PasswordContainerModel passwordContainerModel;
+        private readonly IMediator mediator;
 
         public RequestHandler(IMediator mediator)
         {
@@ -23,47 +23,56 @@ namespace Password_Manager_Server
 
         public void SetUserSession(string token)
         {
-            userKeyToken = token;
+            passwordContainerModel = new PasswordContainerModel {userKeyToken = token};
         }
 
         public async Task<byte[]> HandleRequest(HttpListenerRequest req)
         {
-            if (req.RawUrl == "/importNewContainer" && req.HttpMethod == "POST")
-            {
-                var credentials = DeserializeData(req.InputStream);
-                foreach(var credential in credentials)
-                {
-                    await mediator.Send(new PostCredentialsRequest
-                    { userCredentialToken=userKeyToken, passwordContainer = new PasswordContainer(credential.userID, credential.password) });
-                }
+            passwordContainerModel.passwordContainer = DeserializeInputStream(req.InputStream);
 
-                currentRespond = req.RemoteEndPoint.ToString() + 
-                    $": A new password container imported by {userKeyToken}.";                            
-            }
-
-            else if (req.RawUrl == "/addCredential" && req.HttpMethod == "POST")
+            if (req.RawUrl == "/addcredential" && req.HttpMethod == "POST")
             {
-                var credential = DeserializeData(req.InputStream)[0];
                 await mediator.Send(new PostCredentialsRequest
-                { userCredentialToken = userKeyToken, passwordContainer = new PasswordContainer(credential.userID, credential.password) });
-
-                currentRespond = req.RemoteEndPoint.ToString() + 
-                    $": A new password is inserted by {userKeyToken}.";                                          
+                { passwordContainerModel = passwordContainerModel });
+                currentRespond = req.RemoteEndPoint.ToString() +
+                    $": Credential is successfully added by {passwordContainerModel.userKeyToken}.";
             }
 
-            else if (req.RawUrl == "/getAllCredentials" && req.HttpMethod == "GET")
+            else if (req.RawUrl == "/getallusers" && req.HttpMethod == "GET")
             {
-                var res = await mediator.Send(new GetCredentialsRequest 
-                                            { userCredentialToken = userKeyToken });
+                var res = await mediator.Send(new GetAllUsersRequest
+                { authToken = passwordContainerModel.userKeyToken });
+                currentRespond = JsonConvert.SerializeObject(res, Formatting.Indented);
+            }
+
+            else if (req.RawUrl == "/getallcredentials" && req.HttpMethod == "GET")
+            {
+                var res = await mediator.Send(new GetCredentialsRequest
+                { userCredentialToken = passwordContainerModel.userKeyToken });
                 currentRespond = JsonConvert.SerializeObject(res, Formatting.Indented);
             }
 
             else if (req.RawUrl == "/reset" && req.HttpMethod == "POST")
             {
-                await mediator.Send(new DeleteUserRequest { userCredentialToken = userKeyToken });
-                currentRespond = req.RemoteEndPoint.ToString() + 
-                                                $": User {userKeyToken} is deleted.";
+                await mediator.Send(new DeleteUserRequest { userCredentialToken = passwordContainerModel.userKeyToken });
+                currentRespond = req.RemoteEndPoint.ToString() +
+                                                $": User {passwordContainerModel.userKeyToken} is deleted.";
             }
+
+            else if (req.RawUrl == "/deletecredential" && req.HttpMethod == "POST")
+            {
+                await mediator.Send(new DeleteCredentialRequest { passwordContainerModel = passwordContainerModel });
+                currentRespond = req.RemoteEndPoint.ToString() +
+                    $": Credential is successfully deleted by {passwordContainerModel.userKeyToken}.";
+            }
+
+            else if (req.RawUrl == "/updatecredential" && req.HttpMethod == "POST")
+            {
+                await mediator.Send(new UpdateCredentialRequest { passwordContainerModel = passwordContainerModel });
+                currentRespond = req.RemoteEndPoint.ToString() +
+                    $": Credential is successfully updated by {passwordContainerModel.userKeyToken}.";
+            }
+
             else
             {
                 throw new NotImplementedException();
@@ -72,7 +81,7 @@ namespace Password_Manager_Server
             return Encoding.UTF8.GetBytes(currentRespond);
         }
 
-        private List<PasswordContainer> DeserializeData(Stream inputStream)
+        private static List<PasswordContainer> DeserializeInputStream(Stream inputStream)
         {
             StreamReader reader = new StreamReader(inputStream);
             return JsonConvert.DeserializeObject<List<PasswordContainer>>(reader.ReadToEnd());

@@ -7,8 +7,9 @@ namespace Password_Manager_Server
         public string userKeyToken;
         public List<PasswordContainer> passwordContainer;
 
-        public PasswordContainerModel(string userKeyToken, List<PasswordContainer> passwordContainer)
+        public PasswordContainerModel(string userKeyToken = null, List<PasswordContainer> passwordContainer = null)
         {
+
             this.userKeyToken = userKeyToken;
             this.passwordContainer = passwordContainer;
         }
@@ -27,11 +28,13 @@ namespace Password_Manager_Server
 
     public struct PasswordContainer
     {
+        public int credentialID;
         public string userID;
         public string password;
 
-        public PasswordContainer(string userID, string password)
+        public PasswordContainer(string userID, string password, int credentialID = 0)
         {
+            this.credentialID = credentialID;
             this.userID = userID;
             this.password = password;
         }

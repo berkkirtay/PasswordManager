@@ -14,7 +14,7 @@ namespace Password_Manager_Client
         static public void SetAuthorization(string key)
         {
             var token = EncryptionManager.HashData(key);
-            authKey = Convert.ToBase64String(token);
+            authKey = "Bearer " + Convert.ToBase64String(token);
             Console.WriteLine("Your authorization token: " + authKey);
         }
 

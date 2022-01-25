@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using MediatR;
 
@@ -6,13 +8,13 @@ namespace Password_Manager_Server
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main()
         {
             var host = CreateHostBuilder().Build();
 
             Server server = new Server(host);
             server.StartServer();
-            System.Threading.Thread.Sleep(int.MaxValue);
+            await host.WaitForShutdownAsync();
         }
 
         private static IHostBuilder CreateHostBuilder()
