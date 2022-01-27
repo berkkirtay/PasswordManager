@@ -5,7 +5,6 @@ namespace Password_Manager_Client
     using System.Net;
     using System.IO;
     using System.Text;
-    using System.Security.Cryptography;
 
     class RequestSender
     {
@@ -25,10 +24,10 @@ namespace Password_Manager_Client
             req.Method = "POST";
             req.ContentType = "application/json";
             req.ContentLength = data.Length;
-            // Setting authorization header.
             req.Headers.Add("Authorization", authKey);
-            Stream streamToServer = req.GetRequestStream();
-            SendData(streamToServer, data);
+            Stream stream= req.GetRequestStream();
+            stream.Write(data, 0, data.Length);
+            stream.Close();
             return req;
         }
 
@@ -46,19 +45,6 @@ namespace Password_Manager_Client
             var responseString = new StreamReader(
                 response.GetResponseStream()).ReadToEnd();
             return responseString;
-        }
-
-        static public byte[] ImportData(string dataAddr)
-        {
-            StreamReader reader = new StreamReader(dataAddr);
-            var data = Encoding.UTF8.GetBytes(reader.ReadToEnd());
-            return data;
-        }
-
-        static private void SendData(Stream streamToServer, byte[] data)
-        {
-            streamToServer.Write(data, 0, data.Length);
-            streamToServer.Close();
         }
     }
 }

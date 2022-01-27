@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MediatR;
 
-
 namespace Password_Manager_Server
 {
     using System.Net;
@@ -49,12 +48,24 @@ namespace Password_Manager_Server
             }
         }
 
+        // Cors support is needed for a client app.
+        static private void IncludeCorsSupport(HttpListenerContext context)
+        {
+            var res = context.Response;
+            res.AddHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+            res.AddHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+            res.AddHeader("Access-Control-Allow-Headers", "*");
+            res.StatusCode = 200;
+        }
+
         private async Task HandleRequest(HttpListenerContext context)
         {
             // This statement looks like a method version of proxy pattern.
             // When we get a new request we do not need to instantiate a new object again.
+
             try
             {
+                IncludeCorsSupport(context);
                 if (context.Request.HttpMethod == "OPTIONS")
                 {
                     await SendDataToClient(context, Encoding.UTF8.GetBytes(""));
@@ -77,14 +88,12 @@ namespace Password_Manager_Server
             }
         }
 
-
-
         static public async Task SendDataToClient(HttpListenerContext httpListenerContext, byte[] buffer)
         {
             var res = httpListenerContext.Response;
             res.ContentType = "application/json";
             res.ContentLength64 = buffer.Length;
-            await res.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+            await res.OutputStream.WriteAsync(buffer.AsMemory(0, buffer.Length));
             res.Close();
         }
     }

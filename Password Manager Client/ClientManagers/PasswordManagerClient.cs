@@ -9,19 +9,16 @@ using System.IO;
 
 namespace Password_Manager_Client
 {
-    // This class needs to be refactored.
 
-    class PasswordManagerClient : BaseSigner
+    class PasswordManagerClient
     {
         private string urlPath;
         private bool menuLoop = true;
-        private PasswordSigner passwordSigner = null;
-        private EncryptionManager signer = new EncryptionManager(2048);
 
         public PasswordManagerClient()
         {
             SetAuthorization();
-            InvokePasswordSigner();
+
             while (menuLoop)
             {
                 Menu();    
@@ -33,7 +30,7 @@ namespace Password_Manager_Client
             Console.WriteLine("1 to import a credential file,\n" +
                               "2 to insert a new credential,\n" +
                               "3 to get all the credentials,\n" + 
-                              "4 to reset credentials database: ");
+                              "4 to reset credentials of current session: ");
 
             char choice  = Console.ReadLine()[0];
             Console.Clear();
@@ -57,35 +54,32 @@ namespace Password_Manager_Client
 
         private void SendContainer()
         {
-            urlPath = "/addCredential";
-            var credentialsContainer = 
-                RequestSender.ImportData(Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                                "resources\\passwords.json"));
-            // Call encryptor class
-            InvokePasswordSigner();
-            // Serialize the local json data to send to the server.
-            passwordSigner.SerializeDataAndAssign(
-                Encoding.UTF8.GetString(credentialsContainer));
+            var data = ImportData(
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"resources\\passwords.json"));
+            // Serialize the local json data.
+            var credentials = JsonConvert.DeserializeObject<List<PasswordContainer>>(data);
             // Encrypt the serialized credential data and send it.
-            passwordSigner.SecurePasswords(encrypt);
-            SendData(passwordSigner.GetParsedPasswordData());
+            SecureAndSendCredentials(credentials);
         }
 
         private void SendSignleCredential()
         {
-            urlPath = "/addcredential";
             Console.Write("Enter ID: ");
             string userID = Console.ReadLine();
             Console.Write("Enter password: ");
             string password = Console.ReadLine();
-            InvokePasswordSigner();
-            passwordSigner.InsertCredential(
-                new PasswordContainer(userID, password));
 
-            passwordSigner.SecurePasswords(encrypt);
-            var data = passwordSigner.GetParsedPasswordData();
-            SendData(data);
+            var list = new List<PasswordContainer>();
+            list.Add(new PasswordContainer(userID, password));
+
+            SecureAndSendCredentials(list);
+        }
+
+        private void SecureAndSendCredentials(List<PasswordContainer> credentialList)
+        {
+            urlPath = "/addcredential";
+            var encryptedData = PasswordEncryptor.SecurePasswords(credentialList, crypto.encrypt);
+            SendData(encryptedData);
         }
 
         private void GetCredentials()
@@ -94,16 +88,14 @@ namespace Password_Manager_Client
             var req = RequestSender.CreateGETRequest(
                 "http://localhost:8000" + urlPath);      
             var data = RequestSender.GetRespond(req);
-            InvokePasswordSigner();
-            passwordSigner.SerializeDataAndAssign(data);
-            AttemptCryptography();
-            Console.WriteLine(passwordSigner.ToString());
-        }
 
-        private void InvokePasswordSigner()
-        {
-            passwordSigner = new PasswordSigner();
-            passwordSigner.SetSigner(signer);
+            var credentials = JsonConvert.DeserializeObject<List<PasswordContainer>>(data);
+            var decryptedData = Encoding.UTF8.GetString(PasswordEncryptor.SecurePasswords(credentials, crypto.decrypt));
+            var decryptedCredentials = JsonConvert.DeserializeObject<List<PasswordContainer>>(decryptedData);
+            foreach (var credential in decryptedCredentials)
+            {
+                Console.WriteLine(credential.ToString());
+            }
         }
 
         private void SetAuthorization()
@@ -113,23 +105,10 @@ namespace Password_Manager_Client
             RequestSender.SetAuthorization(pass);
         }
 
-        private void AttemptCryptography()
+        static public string ImportData(string dataAddr)
         {
-            try
-            {
-                passwordSigner.SecurePasswords(decrypt);
-            }
-            catch (System.Security.Cryptography.CryptographicException)
-            {
-                Console.WriteLine(
-                    "CryptographicException: Attemp to decrypt with an invalid private key.");
-                return;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cryptography error: " + ex.ToString());
-                return;
-            }
+            StreamReader reader = new StreamReader(dataAddr);
+            return reader.ReadToEnd();
         }
 
         private void SendData(byte[] parsedData)

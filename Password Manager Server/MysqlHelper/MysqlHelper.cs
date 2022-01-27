@@ -27,10 +27,10 @@ namespace Password_Manager_Server
             {
                 ConnectionString = "server=localhost;user id=root;password=mypassword;database=passwordmanagerdb"
             };
-            InitializeDB().Wait();
+            InitializeMySqlHelper().Wait();
         }
 
-        private async Task InitializeDB()
+        private async Task InitializeMySqlHelper()
         {
             string result = await CheckIfTableIsAvailable();
 
