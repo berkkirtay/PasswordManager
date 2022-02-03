@@ -176,9 +176,10 @@ namespace Password_Manager_Server
             OpenConnection();
 
             string query = "UPDATE credentialsTable " +
-                           $"Set userName=\"{userName}\", password={password}\" " +
+                           $"Set userName=\"{userName}\", password=\"{password}\" " +
                            $"WHERE credentialID=\"{credentialID}\" " +
                            $"and userKeyToken=\"{userKeyToken}\";";
+
             MySqlCommand cmd = new MySqlCommand(query, mySqlConnection);
             await cmd.ExecuteNonQueryAsync();
 

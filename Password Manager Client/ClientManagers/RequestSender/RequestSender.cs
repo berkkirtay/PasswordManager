@@ -9,15 +9,22 @@ namespace Password_Manager_Client
     class RequestSender
     {
         static private string authKey;
+        private static readonly string url = "http://localhost:8000";
 
-        static public void SetAuthorization(string key)
+        static public void SetAuthorization(string token)
         {
-            var token = EncryptionManager.HashData(key);
-            authKey = "Bearer " + Convert.ToBase64String(token);
-            Console.WriteLine("Your authorization token: " + authKey);
+            authKey = token;
         }
 
-        static public WebRequest CreatePOSTRequest(string URL, byte[] data)
+        static public void SendData(byte[] parsedData, string path)
+        {
+            var req = RequestSender.CreatePOSTRequest(
+                url + path, parsedData);
+            var respondStr = GetRespond(req);
+            Console.WriteLine("Server respond: " + respondStr);
+        }
+
+        static private WebRequest CreatePOSTRequest(string URL, byte[] data)
         {
             var req = (HttpWebRequest)WebRequest.Create(URL);
 
@@ -31,9 +38,9 @@ namespace Password_Manager_Client
             return req;
         }
 
-        static public WebRequest CreateGETRequest(string URL)
+        static public WebRequest CreateGETRequest(string path)
         {
-            var req = (HttpWebRequest)WebRequest.Create(URL);
+            var req = (HttpWebRequest)WebRequest.Create(url + path);
             req.Method = "GET";
             req.Headers.Add("Authorization", authKey);
             return req;

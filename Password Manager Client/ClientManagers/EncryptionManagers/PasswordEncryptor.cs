@@ -54,6 +54,7 @@ namespace Password_Manager_Client
             passwordData = encryptor.Encrypt(passwordData);
 
             tempCredentials.Add(new PasswordContainer(
+                 credential.credentialID,
                  Convert.ToBase64String(userData),
                  Convert.ToBase64String(passwordData)));
         }
@@ -68,6 +69,7 @@ namespace Password_Manager_Client
             passwordData = encryptor.Decrypt(passwordData);
 
             tempCredentials.Add(new PasswordContainer(
+                 credential.credentialID,
                  Encoding.UTF8.GetString(userData),
                  Encoding.UTF8.GetString(passwordData)));
         }
