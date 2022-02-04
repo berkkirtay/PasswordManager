@@ -1,9 +1,9 @@
-I developed a simple password manager that stores encrypted credential data in a database via meditor pattern.
+I implemented a simple password manager that stores encrypted credential data in a database via meditor and command patterns.
 
 ## Procedure
-- The client encrypts passwords and sends it to the server. Whenever we try to get our credentials back, the server will check for authorization and will serve the data if it is authorized.
+- The client encrypts passwords and sends it to the server. Whenever we want to retrieve our credentials back, the server will check for authorization and will serve the data if it is authorized.
 
-- When we attempt to retrieve our credentials, the client will decrypt them with the same public-private pair and will serve to the user.
+- When we attempt to retrieve our credentials, the client will decrypt them with the same public-private pair and will serve to the user. Client can use the same key pair or create a new one if it's required.
 
 - Each client can generate its own token and use it to create unique password containers for its user. So, a client can only reach its own container on the server. 
 
@@ -15,28 +15,31 @@ I developed a simple password manager that stores encrypted credential data in a
 
 ## Usage
 
-- After we start the server, we can either use the client or use Postman to test the server.
+- After we start the server, we can either use the client or use a api tester like postman or curl.
 
-- You can change the encryption algorithm on client or can use another client.
+- You can also change the encryption algorithm on client or can use another client.
 
-- The server has 5 http request handlers:
-
+- The server has five endpoint:
    - /addcredential
    - /getallcredentials
    - /deletecredential
    - /updatecredential
    - /reset
            
-   With the given handlers, we can import a container that consists several passwords or a signle credential. We can also fetch or reset or update password data that corresponds to our user token on the server. 
+   With the given handlers, we can send or fetch user credentials. We can also reset or update password data that corresponds to our user token on the server. 
    
-- Server saves all the data fields in a database, I hardcoded schemas in CredentialsDB.cs file, so even if the tables don't exist, server will generate them.
-- Additionally, server saves the credential data in a json file, so you may want to check it out in Password Manager Server folder. 
-- If you use Postman api, your credentials won't be encrypted since server only stores the data it receives.
+- Server saves all the data fields in a database, I hardcoded table creation code in CredentialsDB.cs file, so even if the tables don't exist, server will generate them.
+- Additionally, client can save the credential data in a json file, so you may want to check it out in examples folder.
+- If you use only a api tester like curl, your credentials won't be encrypted since server only stores the data it receives.
 
 ### Example usages:
-- With Postman api: 
+- With Postman api (no encryption on credentials): 
   
 ![Enc1](https://raw.githubusercontent.com/berkkirtay/PasswordManager/main/examples/Capture1.PNG)
+
+- With Curl (no encryption on credentials): 
+- 
+![Enc1](https://raw.githubusercontent.com/berkkirtay/PasswordManager/main/examples/Capture4.PNG)
 
 - With Password Manager Client: 
   
