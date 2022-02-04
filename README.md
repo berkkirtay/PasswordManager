@@ -33,18 +33,22 @@ I implemented a simple password manager that stores encrypted credential data in
 - If you use only a api tester like curl, your credentials won't be encrypted since server only stores the data it receives.
 
 ### Example usages:
-- With Postman api (no encryption on credentials): 
-  
-![Enc1](https://raw.githubusercontent.com/berkkirtay/PasswordManager/main/examples/Capture1.PNG)
-
 - With Curl (no encryption on credentials): 
-- 
+
+
 ![Enc1](https://raw.githubusercontent.com/berkkirtay/PasswordManager/main/examples/Capture4.PNG)
 
+- With Postman (no encryption on credentials): 
+
+
+![Enc1](https://raw.githubusercontent.com/berkkirtay/PasswordManager/main/examples/Capture1.PNG)
+
 - With Password Manager Client: 
-  
+
+
 ![Enc1](https://raw.githubusercontent.com/berkkirtay/PasswordManager/main/examples/Capture2.PNG)
 
 - Encrypted credential data in database:
+
 
 ![Enc1](https://raw.githubusercontent.com/berkkirtay/PasswordManager/main/examples/Capture3.PNG)
