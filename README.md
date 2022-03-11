@@ -19,7 +19,7 @@ I implemented a simple password manager that stores encrypted credential data in
 
 - You can also change the encryption algorithm on client or can use another client.
 
-- The server has five endpoint:
+- The server has five endpoints:
    - /addcredential
    - /getallcredentials
    - /deletecredential
@@ -30,7 +30,7 @@ I implemented a simple password manager that stores encrypted credential data in
    
 - Server saves all the data fields in a database, I hardcoded table creation code in CredentialsDB.cs file, so even if the tables don't exist, server will generate them.
 - Additionally, client can save the credential data in a json file, so you may want to check it out in examples folder.
-- If you use only a api tester like curl, your credentials won't be encrypted since server only stores the data it receives.
+- If you use only an api tester like curl, your credentials won't be encrypted since server only stores the data it receives.
 
 ### Example usages:
 - With Curl (no encryption on credentials): 

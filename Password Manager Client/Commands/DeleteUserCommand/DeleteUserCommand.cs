@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Password_Manager_Client
 {
@@ -12,7 +12,11 @@ namespace Password_Manager_Client
 
         public void Execute()
         {
-            RequestSender.SendData(Encoding.UTF8.GetBytes("reset"), path);
+            var list = new List<PasswordContainer>();
+           // list.Add(new PasswordContainer(credentialID, "", ""));
+            string container = JsonConvert.SerializeObject(
+                    list, Formatting.Indented);
+            RequestSender.SendData(Encoding.UTF8.GetBytes(container), path);
         }
     }
 }

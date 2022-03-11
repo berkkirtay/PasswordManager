@@ -13,6 +13,10 @@ namespace Password_Manager_Client
         public void SecureAndSendCredentials(List<PasswordContainer> credentialList, string path = null)
         {
             var encryptedData = PasswordEncryptor.SecurePasswords(credentialList, crypto.encrypt);
+            if(path == null)
+            {
+                path = this.path;
+            }
             RequestSender.SendData(encryptedData, path);
         }
     }

@@ -31,8 +31,9 @@ namespace Password_Manager_Client
             Console.WriteLine("1 to import a credential file,\n" +
                               "2 to insert a new credential,\n" +
                               "3 to get all the credentials,\n" +
-                              "4 to update the credentials,\n" +
-                              "5 to reset credentials of current session: ");
+                              "4 to update a credential,\n" +
+                              "5 to delete a credential,\n" +
+                              "6 to reset credentials of current user: ");
 
             char choice  = Console.ReadLine()[0];
             Console.Clear();
@@ -50,6 +51,9 @@ namespace Password_Manager_Client
                     command = new UpdateCredentialCommand();
                     break;
                 case '5':
+                    command = new DeleteCredentialCommand();
+                    break;
+                case '6':
                     command = new DeleteUserCommand();
                     break;
             }

@@ -15,7 +15,7 @@ namespace Password_Manager_Client
         {
             // Get a list of credentials:
             command.Execute();
-            Console.WriteLine("Please enter the index of the credential that you want to change:");
+            Console.WriteLine("\nPlease enter the index of the credential that you want to change:");
             int credentialID = Convert.ToInt32(Console.ReadLine());
 
             Console.Write("Enter new fields userID and password consecutively: ");

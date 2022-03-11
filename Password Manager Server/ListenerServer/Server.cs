@@ -29,10 +29,13 @@ namespace Password_Manager_Server
         {
             await ListenerLoop(listener);
         }
+
         private async Task ListenerLoop(HttpListener listener)
         {
 
             listener.Start();
+            Console.WriteLine("Server started listening at port 8000.");
+
             while (true)
             {
                 try

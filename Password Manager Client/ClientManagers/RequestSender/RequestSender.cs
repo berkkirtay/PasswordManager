@@ -18,7 +18,7 @@ namespace Password_Manager_Client
 
         static public void SendData(byte[] parsedData, string path)
         {
-            var req = RequestSender.CreatePOSTRequest(
+            var req = CreatePOSTRequest(
                 url + path, parsedData);
             var respondStr = GetRespond(req);
             Console.WriteLine("Server respond: " + respondStr);
