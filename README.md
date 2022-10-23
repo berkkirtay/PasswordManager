@@ -1,4 +1,4 @@
-I implemented a simple password manager that stores encrypted credential data in a database via meditor and command patterns.
+I implemented a simple password manager that stores encrypted credential data in a database via mediator and command design patterns with C#.
 
 ## Procedure
 - The client encrypts passwords and sends it to the server. Whenever we want to retrieve our credentials back, the server will check for authorization and will serve the data if it is authorized.
